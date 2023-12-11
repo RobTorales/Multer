@@ -13,14 +13,17 @@ class ProductController {
       const products = await this.productService.getProducts(req.query);
       res.send(products);
     } catch (error) {
-      const productErr = new CustomeError({
+      const productError = new CustomError({
         name: "Product Fetch Error",
-        message: "Error al obtener los productos",
-        code:500,
-        cause:error.message,
+        message: "Error fetching products.",
+        code: 500,
+        cause: error.message,
       });
-      req.logger.error(productErr);
-      res.status(500).send({status:"error", message:"Error al obtener los productos"})
+      console.error(productError);
+      res.status(productError.code).send({
+        status: "error",
+        message: "Error fetching products.",
+      });
     }
   }
 
@@ -28,27 +31,32 @@ class ProductController {
     try {
       const pid = req.params.pid;
       req.logger.info("Product ID:", pid);
-      if(!mongoose.Types.ObjectId.isValid(pid)){
-        throw new CustomeError({
-          name: "Invalid ID",
-          message: "El ID no es correcto",
-          code:400,
-          cause: productError(pid),
+
+      if (!mongoose.Types.ObjectId.isValid(pid)) {
+        throw new CustomError({
+          name: "Invalid ID Error",
+          message: "El ID del producto proporcionado no es válido",
+          code: 400,
+          cause: generateProductErrorInfo(pid),
         });
       }
+
       const product = await this.productService.getProductById(pid);
+
       if (!product) {
-        throw new CustomeError({
-          name: "Product not found",
-          message: "El producto no pudo ser encontrado",
-          code:404,
+        throw new CustomError({
+          name: "Product Not Found Error",
+          message: generateProductErrorInfo(pid),
+          code: 404,
         });
       }
-        res.status(200).json({ status: "success", data: product });
-        return;
-      
+
+      res.status(200).json({
+        status: "success",
+        data: product,
+      });
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -63,8 +71,9 @@ class ProductController {
       category,
       thumbnails,
     } = req.body;
-    req.logger.info("Received thumbnails:", thumbnails);
-    const owner = req.user_id;
+
+    const owner = req.user._id;
+
     if (!title) {
       res.status(400).send({
         status: "error",
@@ -118,7 +127,7 @@ class ProductController {
     if (!thumbnails) {
       res.status(400).send({
         status: "error",
-        message: "Error! No se cargó el campo thumbnails!",
+        message: "Error! No se cargó el campo Thumbnails!",
       });
       return false;
     }
@@ -140,6 +149,7 @@ class ProductController {
         res.send({
           status: "ok",
           message: "El Producto se agregó correctamente!",
+          productId: wasAdded._id,
         });
         socketServer.emit("product_created", {
           _id: wasAdded._id,
@@ -151,6 +161,7 @@ class ProductController {
           stock,
           category,
           thumbnails,
+          owner,
         });
         return;
       } else {
@@ -234,7 +245,7 @@ class ProductController {
       console.log("product owner", product.owner);
 
       if (!product) {
-        console.log("Producto no encontrado");
+        req.logger.error("Producto no encontrado");
         res.status(404).send({
           status: "error",
           message: "Producto no encontrado",
@@ -262,26 +273,24 @@ class ProductController {
       const wasDeleted = await this.productService.deleteProduct(pid);
 
       if (wasDeleted) {
-        console.log("Producto eliminado exitosamente");
+        req.logger.info("Producto eliminado exitosamente");
         res.send({
           status: "ok",
           message: "Producto eliminado exitosamente",
         });
-        socketServer.emit("product_deleted", { _id: pid });
       } else {
-        console.log("Error eliminando el producto");
         res.status(500).send({
           status: "error",
-          message: "Error eliminando el producto",
+          message: "Error! No se pudo eliminar el Producto!",
         });
       }
     } catch (error) {
       req.logger.error("Error en deleteProduct:", error);
       res
         .status(500)
-        .send({ status: "error", message: "Error interno del servidor" });
+        .send({ status: "error", message: "Internal server error." });
     }
   }
 }
 
-export default ProductController;
+export default new ProductController();

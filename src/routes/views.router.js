@@ -1,7 +1,7 @@
 import express from "express";
 import ProductManager from "../dao/ProductManager.js";
 import CartManager from "../dao/CartManager.js";
-import { userModel } from "../dao/models/user.model.js";
+import userModel from "../dao/models/user.model.js";
 
 const checkSession = (req, res, next) => {
     console.log('Checking session:', req.session);
@@ -120,19 +120,6 @@ router.get("/reset-password/:token", async (req, res) => {
 router.get("/restore", async (req, res) => {
     res.render("restore");
 });
-
-router.get("/upload/:uid", (req, res) => {
-  const userId = req.params.uid;
-  console.log("ID de usuario: ", userId);
-  res.render("uploads", {userId});
-});
-
-router.get('/premium/:uid', (req, res) => {
-  const userId = req.params.uid;
-  console.log("ID de usuario: ", userId);
-  res.render("premium", {userId});
-});
-
 router.get("/faillogin", async (req, res) => {
     res.send({status:"error", message:"Login inválido!"});
 });

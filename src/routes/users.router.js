@@ -1,21 +1,30 @@
 import { Router } from "express";
-import UserController from "../controllers/user.controllers.js";
-import uploadConfig from "../multer/multer.js";
+import UserController from "../controllers/userController.js";
+import uploadConfig from "../multer/multer.config.js";
 
-const userRouter = Router();
 const userController = new UserController();
+const usersRouter = Router();
 
-userRouter.post('/premium/:uid', userController.upgradeToPremium);
-userRouter.post('/:uid/documents', uploadConfig.fields([
-    {name:"profiles", maxCount:1},
-    {name:"products", maxCount:1},
-    {name:"document", maxCount:1},
-]), userController.uploadFiles);
-userRouter.post('/:uid/premium-documents', uploadConfig.fields([
-    {name:"identificationDocument", maxCount:1},
-    {name:"domicileProofDocument", maxCount:1},
-    {name:"accountStatementDocument", maxCount:1},
-]), userController.uploadPremiumDocuments);
+usersRouter.post(
+  "/:uid/documents",
+  uploadConfig.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "productImage", maxCount: 1 },
+    { name: "document", maxCount: 1 },
+  ]),
+  userController.uploadFiles
+);
 
+usersRouter.post(
+  "/:uid/premium-documents",
+  uploadConfig.fields([
+    { name: "identificationDocument", maxCount: 1 },
+    { name: "domicileProofDocument", maxCount: 1 },
+    { name: "accountStatementDocument", maxCount: 1 },
+  ]),
+  userController.uploadPremiumDocuments
+);
 
-export default userRouter;
+usersRouter.post("/premium/:uid", userController.upgradeToPremium);
+
+export default usersRouter;

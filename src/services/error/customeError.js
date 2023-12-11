@@ -1,4 +1,4 @@
-export default class CustomeError extends Error {
+export default class CustomError extends Error {
     constructor({
         name = "Error", cause, message, code = 500 
     }){

@@ -1,4 +1,4 @@
-export const generateUserError= (user)=>{
+export const generateUserErrorInfo= (user)=>{
     return `Un dato o varios fueron ingresados de mala manera o estan en faltante.
             Datos requeridos:
                 * first_name: type String, recibido: ${user.first_name}

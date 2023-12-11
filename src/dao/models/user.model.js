@@ -9,22 +9,21 @@ const userSchema = new mongoose.Schema({
   },
   age: Number,
   password: String,
-  cart: {type: mongoose.Schema.Types.ObjectId, ref:"carts"},
+  cart: { type: mongoose.Schema.Types.ObjectId, ref: "carts" },
   role: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-  documents: [{
-    name:{
-      type: String,
-      unique: true,
-    },
-    reference: String,
-    status: {
-      type: String,
-      default: "Pending",
-    },
-  }],
   last_connection: Date,
+  documents: [
+    {
+      name: String,
+      reference: String,
+      status: {
+        type: String,
+        default: "Pending",
+      },
+    },
+  ],
 });
 
 export const userModel = mongoose.model("users", userSchema);

@@ -15,7 +15,6 @@ import sessionsRouter from "./routes/sessions.router.js";
 import emailRouter from "./routes/email.router.js";
 import smsRouter from "./routes/sms.router.js";
 import mockingRouter from "./mocking/mock.router.js";
-import userRouter from "./routes/users.router.js";
 import logsRouter from "./routes/logs.router.js";
 import viewsRouter from "./routes/views.router.js";
 import session from "express-session";
@@ -89,7 +88,6 @@ app.use("/api/sessions/", sessionsRouter);
 app.use('/mockingproducts', mockingRouter);
 app.use("/api/email", emailRouter);
 app.use("/api/sms", smsRouter);
-app.use("/api/users", userRouter)
 app.use("/", viewsRouter);
 app.use("/loggerTest", logsRouter)
 app.use("/apidocs",swaggerUIExpress.serve, swaggerUIExpress.setup(specs));
